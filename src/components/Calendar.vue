@@ -1,11 +1,5 @@
 <template>
     <div>
-        <label>
-            <select name="select" v-model="selectedMonth">
-                <option v-for="month in months" :value="month" :key="month.id">{{ month.text }}</option>
-            </select>
-        </label>
-
         <button class="btn btn-primary" v-if="hasPrevious" @click="previousMonth">Previous</button>
         {{ selectedMonth && selectedMonth.text }}
         <button class="btn btn-primary" v-if="hasNext" @click="nextMonth">Next</button>
@@ -20,7 +14,7 @@
 
             <!-- Day cells -->
             <div class="row flex-nowrap" v-for="(week, weekIndex) in weeks" :key="week.id">
-                <div class="col"
+                <div class="col calendar--day--container"
                      v-for="(day, dayIndex) in week.days"
                      v-bind:id="id(weekIndex, dayIndex, day.value)"
                      :key="day.id"
@@ -41,14 +35,11 @@
 </template>
 
 <script>
-    /* eslint-disable no-console */
     import Moment from 'moment';
     import {extendMoment} from 'moment-range';
-
     import CalendarDayEvent from './CalendarDayEvent';
 
     const moment = extendMoment(Moment);
-    window.moment = moment;
 
     export default {
         name: 'FlexCalendar',
@@ -129,10 +120,10 @@
         }),
 
         mounted() {
-            const date1 = moment(this.startDate);
-            const date2 = moment(this.endDate);
-
-            if (this.log) this.showDebugInfo(date1, date2);
+            this.diffBetweenDates(
+                moment(this.startDate),
+                moment(this.endDate)
+            );
         },
 
         filters: {
@@ -157,6 +148,13 @@
                 if (el) el.scrollIntoView({
                     behavior: 'smooth'
                 });
+            },
+
+            startDate() {
+                this.diffBetweenDates(
+                    moment(this.startDate),
+                    moment(this.endDate)
+                );
             }
         },
 
@@ -225,11 +223,7 @@
                 }
                 this.selectedMonth = this.months[0];
 
-                if (this.log) this.showDebugMonths();
-
-                if (this.log) console.groupCollapsed('Weeks');
                 this.buildWeeks(date1, weeks, diffInDays);
-                if (this.log) console.groupEnd('Weeks');
             },
 
             buildWeeks(date1, weeks) {
@@ -240,15 +234,11 @@
 
             addDays(initialDate, weekIndex) {
                 const start = weekIndex * 7;
-                const result = Array(7).fill().map((_, index) => {
+                return Array(7).fill().map((_, index) => {
                     const value = moment(initialDate).add(start + index, 'day');
 
                     return {id: this.uui(), value};
                 });
-
-                if (this.log) this.showDebugWeeks(result, weekIndex);
-
-                return result;
             },
 
             isFirstDayOfMonth(weekIndex, dayIndex, day) {
@@ -280,88 +270,6 @@
                 return this.events[d];
             },
 
-            showDebugInfo(date1, date2) {
-                console.group('Calendar');
-
-                console.groupCollapsed('Day information');
-                console.groupCollapsed('Date #1');
-                console.log('Index of the week', date1.day());
-                console.log('Index of the month', date1.month());
-                console.log('Iso index of the week', weekDay1);
-                console.log('Day of the week', this.days[weekDay1]);
-                console.groupEnd();
-                console.groupCollapsed('Date #2');
-                console.log('Index of the week', date2.day());
-                console.log('Iso index of the week', weekDay2);
-                console.log('Day of the week', this.days[weekDay2]);
-                console.groupEnd();
-                console.groupEnd();
-
-                this.diffBetweenDates(date1, date2);
-                console.groupEnd();
-
-                const weekDay1 = date1.isoWeekday() - 1;
-                const weekDay2 = date2.isoWeekday() - 1;
-
-                const diffInDays = this.diffInDays(date1, date2);
-                const diffInWeeks = this.diffInWeeks(date1, date2);
-                const diffInMonths = this.diffInMonths(date1, date2);
-
-                console.groupCollapsed('Diff between dates');
-                console.log('Diff in days', diffInDays);
-                console.log('Diff in weeks', diffInWeeks);
-                console.log('Diff in months', diffInMonths);
-                console.groupEnd();
-
-                console.groupCollapsed('Some maths');
-                console.log(`Weeks => ${diffInDays} / 7 =`, diffInDays / 7);
-                console.log(`Remaining days => ${diffInDays} mod 7 =`, diffInDays % 7);
-                console.log('Added week', diffInDays % 7 === 0);
-                console.groupEnd();
-
-                console.groupCollapsed('Events');
-                Object.keys(this.events).forEach(event => {
-                    const {price, desc, products} = this.events[event];
-                    console.groupCollapsed(`Event ${event}`);
-                    console.log(`Price`, price);
-                    console.log(`Desc`, desc);
-                    console.log(`Products`, [...products]);
-                    console.groupEnd();
-                });
-                console.groupEnd();
-
-                const fromDate = moment();
-                const toDate = moment().add(15, 'days');
-                const range = moment().range(fromDate, toDate);
-                const diff = range.diff('days');
-                const days = Array.from(range.by('days'));
-
-                console.group('Moment range calculations');
-                console.log(`fromDate`, fromDate);
-                console.log(`toDate`, toDate);
-                console.log(`Range`, range);
-                console.log(`Diff`, diff);
-                console.log(`Days`, days);
-                console.groupCollapsed('Moment range calculations');
-                days.forEach((day, index) => {
-                    console.log(`#${index} Day`, day.format('DD-MM-YYYY'));
-                });
-                console.groupEnd();
-                console.groupEnd();
-            },
-
-            showDebugMonths() {
-                console.groupCollapsed('Months');
-                console.log(this.months);
-                console.groupEnd();
-            },
-
-            showDebugWeeks(result, weekIndex) {
-                console.groupCollapsed(`Week ${weekIndex + 1}`);
-                console.log(result);
-                console.groupEnd();
-            },
-
             classesFor(day) {
                 const d = this.shorFormat(day.value);
                 const classes = (this.selectedDays[d] || {}).classes;
@@ -379,9 +287,11 @@
                     days = Array.from(range.by('days'));
 
                 this.selectedDays = {};
-                days.forEach(day => {
+                days.forEach((day, index) => {
+                    const classes = index === 0 ? ['highlight', 'first--highlight'] : 'highlight';
+
                     this.selectedDays[this.shorFormat(day)] = {
-                        classes: 'highlight'
+                        classes
                     }
                 });
             }
@@ -432,5 +342,19 @@
     .highlight {
         background: #fff;
         color: #111;
+    }
+
+    .calendar--day--container:focus {
+        outline: 0;
+    }
+
+    .calendar--day--container:hover {
+        border: 2px solid cornflowerblue;
+    }
+
+    .first--highlight,
+    .calendar--day--container.first--highlight:hover {
+        border: 0;
+        border-left: 5px solid cornflowerblue;
     }
 </style>
