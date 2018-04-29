@@ -54,17 +54,9 @@
                 }
             },
 
-            startDate: {
-                default() {
-                    return moment.now()
-                }
-            },
+            startDate: {},
 
-            endDate: {
-                default() {
-                    return moment().add(90, 'days');
-                }
-            },
+            endDate: {},
 
             events: {
                 type: Object,
@@ -119,12 +111,7 @@
             log: true
         }),
 
-        mounted() {
-            this.diffBetweenDates(
-                moment(this.startDate),
-                moment(this.endDate)
-            );
-        },
+        mounted() {},
 
         filters: {
             number(date) {
@@ -138,6 +125,13 @@
             dayFormat(value) {
                 return value.substr(0, 1).toUpperCase() + value.substr(1, 1).toLowerCase();
             },
+        },
+
+        mounted() {
+            this.diffBetweenDates(
+                moment(this.startDate),
+                moment(this.endDate)
+            );
         },
 
         watch: {
@@ -217,6 +211,7 @@
                 const diffInMonths = this.diffInMonths(date1, date2);
                 const weeks = diffInWeeks + 1;
 
+                this.months = [];
                 for (let index = 0; index <= diffInMonths; index++) {
                     const nextMonth = moment(date1).add(index, 'month').format('MMMM');
                     this.months.push({id: this.uui(), value: nextMonth, text: nextMonth})
