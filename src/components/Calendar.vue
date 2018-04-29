@@ -73,68 +73,58 @@
                 default() {
                     return moment().add(90, 'days');
                 }
+            },
+
+            events: {
+                type: Object,
+                default() {
+                    return {
+                        '2018-04-28': {
+                            price: 32.323,
+                            desc: 45,
+                            duration: 3,
+                            products: [{
+                                product_id: 18,
+                                price: 23123
+                            }]
+                        },
+                        '2018-04-30': {
+                            price: 32.323,
+                            desc: 45,
+                            duration: 2,
+                            products: [{
+                                product_id: 18,
+                                price: 23123
+                            }]
+                        },
+                        '2018-05-06': {
+                            price: 32.323,
+                            desc: 45,
+                            duration: 7,
+                            products: [{
+                                product_id: 18,
+                                price: 23123
+                            }]
+                        },
+                        '2018-05-17': {
+                            price: 32.323,
+                            desc: 45,
+                            duration: 5,
+                            products: [{
+                                product_id: 18,
+                                price: 23123
+                            }]
+                        }
+                    }
+                }
             }
         },
 
         data: () => ({
-            // days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            // startDate: moment.now(),
-            // endDate: '2018-08-10',
             weeks: [],
             months: [],
             selectedMonth: null,
-            selectedDays: {
-                // '2018-04-29': {
-                //     classes: ['highlight']
-                // },
-                // '2018-04-30': {
-                //     classes: ['highlight']
-                // },
-                // '2018-05-01': {
-                //     classes: ['highlight']
-                // },
-                // '2018-05-02': {
-                //     classes: ['highlight']
-                // }
-            },
-            events: {
-                '2018-04-28': {
-                    price: 32.323,
-                    desc: 45,
-                    duration: 3,
-                    products: [{
-                        product_id: 18,
-                        price: 23123
-                    }]
-                },
-                '2018-04-30': {
-                    price: 32.323,
-                    desc: 45,
-                    duration: 2,
-                    products: [{
-                        product_id: 18,
-                        price: 23123
-                    }]
-                },
-                '2018-05-06': {
-                    price: 32.323,
-                    desc: 45,
-                    duration: 7,
-                    products: [{
-                        product_id: 18,
-                        price: 23123
-                    }]
-                },
-                '2018-05-17': {
-                    price: 32.323,
-                    desc: 45,
-                    duration: 5,
-                    products: [{
-                        product_id: 18,
-                        price: 23123
-                    }]
-                }
-            },
+            selectedDays: {},
             log: true
         }),
 
@@ -143,7 +133,6 @@
             const date2 = moment(this.endDate);
 
             if (this.log) this.showDebugInfo(date1, date2);
-
         },
 
         filters: {
@@ -341,11 +330,11 @@
                 });
                 console.groupEnd();
 
-                var fromDate = moment();
-                var toDate = moment().add(15, 'days');
-                var range = moment().range(fromDate, toDate);
-                var diff = range.diff('days');
-                var days = Array.from(range.by('days'));
+                const fromDate = moment();
+                const toDate = moment().add(15, 'days');
+                const range = moment().range(fromDate, toDate);
+                const diff = range.diff('days');
+                const days = Array.from(range.by('days'));
 
                 console.group('Moment range calculations');
                 console.log(`fromDate`, fromDate);
