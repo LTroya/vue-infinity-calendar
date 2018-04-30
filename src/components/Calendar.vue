@@ -47,6 +47,7 @@
     import CalendarDayEvent from './CalendarDayEvent';
 
     const moment = extendMoment(Moment);
+    const today = moment().format('YYYY-MM-DD');
 
     export default {
         name: 'Calendar',
@@ -69,6 +70,9 @@
                 type: Object,
                 default() {
                     return {
+                        [today]: {
+                            template: `<a class="buy--today--flex" href="http://google.com">Compra Ticket para hoy!</a>`
+                        },
                         [moment().add(2, 'days').format('YYYY-MM-DD')]: {
                             price: 32.323,
                             desc: 45,
@@ -117,9 +121,6 @@
             selectedDays: {},
             log: true
         }),
-
-        mounted() {
-        },
 
         filters: {
             number(date) {
@@ -275,9 +276,11 @@
 
             classesFor(day) {
                 const d = this.shorFormat(day.value);
-                const classes = (this.selectedDays[d] || {}).classes;
+                const classes = (this.selectedDays[d] || {}).classes || [];
 
-                return classes ? classes : [];
+                if (today === d) classes.push('is--today');
+
+                return classes;
             },
 
             onDayClick(day) {
@@ -363,5 +366,16 @@
     .calendar--day--container.first--highlight:hover {
         border: 0;
         border-left: 5px solid cornflowerblue;
+    }
+
+    .buy--today--flex {
+        background: #196aa5;
+        border-radius: 5px;
+        color: #fff !important;
+        display: block;
+        font-size: 12px;
+        padding: 5px;
+        position: relative;
+        top: 10px;
     }
 </style>

@@ -1,7 +1,10 @@
 <template>
     <div class="calendar--day--event">
-        <h3 class="event--price">{{ event.price }}</h3>
-        <p class="event--discount" v-text="desc"></p>
+        <div v-html="event.template" v-if="event.template"></div>
+        <div v-else>
+            <h3 class="event--price">{{ event.price }}</h3>
+            <p class="event--discount" v-text="desc"></p>
+        </div>
     </div>
 </template>
 
