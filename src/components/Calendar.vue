@@ -1,8 +1,15 @@
 <template>
     <div>
-        <button class="btn btn-primary" v-if="hasPrevious" @click="previousMonth">Previous</button>
-        {{ selectedMonth && selectedMonth.text }}
-        <button class="btn btn-primary" v-if="hasNext" @click="nextMonth">Next</button>
+        <slot name="heading"
+              :has-previous="hasPrevious"
+              :has-next="hasNext"
+              :previous-month="previousMonth"
+              :next-month="nextMonth"
+              :current-month="selectedMonth">
+            <button class="btn btn-primary" v-if="hasPrevious" @click="previousMonth">Previous</button>
+            {{ selectedMonth && selectedMonth.text }}
+            <button class="btn btn-primary" v-if="hasNext" @click="nextMonth">Next</button>
+        </slot>
 
         <div class="container-fluid calendar--wrapper">
             <!-- Days -->
@@ -16,7 +23,7 @@
             <div class="row flex-nowrap" v-for="(week, weekIndex) in weeks" :key="week.id">
                 <div class="col calendar--day--container"
                      v-for="(day, dayIndex) in week.days"
-                     v-bind:id="id(weekIndex, dayIndex, day.value)"
+                     :id="id(weekIndex, dayIndex, day.value)"
                      :key="day.id"
                      :class="classesFor(day)"
                      @click="onDayClick(day)"
@@ -42,7 +49,7 @@
     const moment = extendMoment(Moment);
 
     export default {
-        name: 'FlexCalendar',
+        name: 'Calendar',
 
         components: {CalendarDayEvent},
 
@@ -62,7 +69,7 @@
                 type: Object,
                 default() {
                     return {
-                        '2018-04-28': {
+                        [moment().add(2, 'days').format('YYYY-MM-DD')]: {
                             price: 32.323,
                             desc: 45,
                             duration: 3,
@@ -71,7 +78,7 @@
                                 price: 23123
                             }]
                         },
-                        '2018-04-30': {
+                        [moment().add(7, 'days').format('YYYY-MM-DD')]: {
                             price: 32.323,
                             desc: 45,
                             duration: 2,
@@ -80,7 +87,7 @@
                                 price: 23123
                             }]
                         },
-                        '2018-05-06': {
+                        [moment().add(10, 'days').format('YYYY-MM-DD')]: {
                             price: 32.323,
                             desc: 45,
                             duration: 7,
@@ -89,7 +96,7 @@
                                 price: 23123
                             }]
                         },
-                        '2018-05-17': {
+                        [moment().add(15, 'days').format('YYYY-MM-DD')]: {
                             price: 32.323,
                             desc: 45,
                             duration: 5,
@@ -111,7 +118,8 @@
             log: true
         }),
 
-        mounted() {},
+        mounted() {
+        },
 
         filters: {
             number(date) {
@@ -341,6 +349,10 @@
 
     .calendar--day--container:focus {
         outline: 0;
+    }
+
+    .calendar--day--container {
+        border: 2px solid transparent;
     }
 
     .calendar--day--container:hover {

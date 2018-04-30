@@ -1,10 +1,14 @@
 <template>
     <div id="app">
-        <button @click="changeDate">Change</button>
         <calendar
-            :start-date="startDate"
-            :end-date="endDate"
-        />
+                :start-date="startDate"
+                :end-date="endDate">
+            <template slot="heading" slot-scope="props">
+                <button class="btn btn-primary" v-if="props.hasPrevious" @click="props.previousMonth">Previous</button>
+                {{ props.currentMonth && props.currentMonth.text }}
+                <button class="btn btn-primary" v-if="props.hasNext" @click="props.nextMonth">Next</button>
+            </template>
+        </calendar>
     </div>
 </template>
 
@@ -28,11 +32,6 @@
             additionalDays: 90
         }),
 
-        methods: {
-            changeDate(){
-                this.startDate = moment().add(30, 'days');
-                this.endDate = moment(this.startDate).add(this.additionalDays, 'days');
-            }
-        }
+        methods: {}
     }
 </script>
