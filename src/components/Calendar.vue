@@ -260,22 +260,22 @@
                 return Math.random() * 100000000;
             },
 
-            shorFormat(date) {
+            shortFormat(date) {
                 return date.format('YYYY-MM-DD');
             },
 
             hasDayEvent(day) {
-                const d = this.shorFormat(day.value);
+                const d = this.shortFormat(day.value);
                 return this.events[d];
             },
 
             eventFor(day) {
-                const d = this.shorFormat(day.value);
+                const d = this.shortFormat(day.value);
                 return this.events[d];
             },
 
             classesFor(day) {
-                const d = this.shorFormat(day.value);
+                const d = this.shortFormat(day.value);
                 const classes = (this.selectedDays[d] || {}).classes || [];
 
                 if (today === d) classes.push('is--today');
@@ -296,7 +296,7 @@
                 days.forEach((day, index) => {
                     const classes = index === 0 ? ['highlight', 'first--highlight'] : 'highlight';
 
-                    this.selectedDays[this.shorFormat(day)] = {
+                    this.selectedDays[this.shortFormat(day)] = {
                         classes
                     }
                 });
@@ -342,7 +342,7 @@
 
     .calendar--wrapper {
         overflow: auto;
-        height: 530px;
+        max-height: 530px;
     }
 
     .highlight {
